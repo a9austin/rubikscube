@@ -1,0 +1,81 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f0f0f0;
+    margin: 0;
+    perspective: 800px;
+}
+
+.rubiks-cube {
+    position: relative;
+    width: 90px;
+    height: 90px;
+    transform-style: preserve-3d;
+    transform: rotateX(-30deg) rotateY(-45deg);
+}
+
+.face {
+    position: absolute;
+    width: 90px;
+    height: 90px;
+    display: grid;
+    grid-template-columns: repeat(3, 30px);
+    grid-gap: 1px;
+    transform-origin: center center; /* Adjust as needed */
+}
+
+.face-container {
+    animation: rotateClockwise 0.5s ease-in-out forwards;
+}
+
+.small-cube {
+    width: 30px;
+    height: 30px;
+    box-sizing: border-box;
+    border: solid 2px #000; /* Increased border width for visibility */
+}
+
+@keyframes rotateClockwise {
+    0% {
+        transform: rotateY(0deg);
+    }
+    100% {
+        transform: rotateY(90deg);
+    }
+} 
+
+@keyframes rotateClockwise {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(90deg); }
+}
+
+@keyframes rotateCounterclockwise {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(-90deg); }
+}
+
+.rotate-clockwise {
+    animation: rotateClockwise 0.5s ease-in-out forwards;
+}
+
+.rotate-counterclockwise {
+    animation: rotateCounterclockwise 0.5s ease-in-out forwards;
+}
+
+/* Specific styles for each face */
+.front .small-cube { background-color: red; }
+.right .small-cube { background-color: green; }
+.top .small-cube { background-color: yellow; }
+.left .small-cube { background-color: orange; }
+.bottom .small-cube { background-color: white; }
+.back .small-cube { background-color: blue; }
+
+/* Positioning each face correctly in 3D space */
+.front { transform: rotateY(0deg) translateZ(45px); }
+.right { transform: rotateY(90deg) translateZ(45px); }
+.back { transform: rotateY(180deg) translateZ(45px); }
+.left { transform: rotateY(-90deg) translateZ(45px); }
+.top { transform: rotateX(90deg) translateZ(45px); }
+.bottom { transform: rotateX(-90deg) translateZ(45px); }
