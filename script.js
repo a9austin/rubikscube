@@ -1,3 +1,9 @@
+document.addEventListener('DOMContentLoaded', function() {
+
+
+
+
+
 // Initial rotation values for the whole cube
 let xRotation = -30;
 let yRotation = -45;
@@ -30,6 +36,8 @@ function rotateCube(direction) {
 
 // Function to rotate the top row of the front face to the right (clockwise)
 function rotateTopRowFrontClockwise() {
+
+
     // Temporary storage for the top row of each affected face
     let tempFrontTop = cubeState.front.slice(0, 3);
     let tempRightTop = cubeState.right.slice(0, 3);
@@ -58,6 +66,7 @@ function rotateTopRowFrontClockwise() {
     updateFace('right');
     updateFace('back');
     updateFace('left');
+
 }
 
 // Function to rotate the top row of the front face to the left (counterclockwise)
@@ -572,7 +581,6 @@ function updateFace(face) {
 // Event listener for keydown events
 document.addEventListener('keydown', function(event) {
     if (event.key === 't') {
-        console.log("Key pressed:", event.key); // For debugging
         rotateTopRowFrontClockwise();
     } else if (event.key === 'T') {
         rotateTopRowFrontCounterclockwise();
@@ -631,6 +639,7 @@ document.addEventListener('keydown', function(event) {
     }
 });
 
+
 // Initial render of the cube
 updateFace('front');
 updateFace('right');
@@ -653,3 +662,41 @@ function removeRotationAnimation(face, direction) {
         faceElement.classList.remove('rotate-' + direction);
     }
 }
+
+// Shuffling Logic
+
+function shuffleCube() {
+    const numShuffles = 20; // Number of shuffle moves
+    const rotationFunctions = [
+        rotateTopRowFrontClockwise, rotateTopRowFrontCounterclockwise,
+        rotateMiddleRowFrontClockwise, rotateMiddleRowFrontCounterclockwise,
+        rotateBottomRowFrontClockwise, rotateBottomRowFrontCounterclockwise,
+        rotateLeftColumnFrontClockwise, rotateLeftColumnFrontCounterclockwise,
+        rotateMiddleColumnFrontClockwise, rotateMiddleColumnFrontCounterclockwise,
+        rotateRightColumnFrontClockwise, rotateRightColumnFrontClockwise,
+        rotateFrontFaceClockwise, rotateFrontFaceCounterclockwise,
+        rotateBackFaceClockwise, rotateBackFaceCounterclockwise
+        // Include other rotation functions if any
+    ];
+
+    function performShuffleStep(step) {
+        if (step < numShuffles) {
+            const randomRotationFunction = rotationFunctions[Math.floor(Math.random() * rotationFunctions.length)];
+            randomRotationFunction();
+            setTimeout(() => performShuffleStep(step + 1), 200); // Reduced to 200ms for faster shuffling
+            console.log(`Shuffling step ${step + 1}: Executing ${randomRotationFunction.name}`);
+        }
+        else {
+            console.log("Shuffle completed.");
+        }
+
+    }
+
+    performShuffleStep(0);
+}
+
+document.getElementById('shuffleButton').addEventListener('click', shuffleCube);
+
+
+
+});
