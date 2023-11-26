@@ -37,6 +37,8 @@ function rotateCube(direction) {
 // Function to rotate the top row of the front face to the right (clockwise)
 function rotateTopRowFrontClockwise() {
 
+    let topRow = document.querySelector('.top-row'); // Ensure you have a 'top-row' class defined for the top row
+    topRow.style.animation = 'rotateTopRowClockwise 0.5s forwards';
 
     // Temporary storage for the top row of each affected face
     let tempFrontTop = cubeState.front.slice(0, 3);
@@ -66,6 +68,12 @@ function rotateTopRowFrontClockwise() {
     updateFace('right');
     updateFace('back');
     updateFace('left');
+
+    // Remove the animation style after completion
+    setTimeout(() => {
+        topRow.style.animation = '';
+    }, 500); // Match the timeout with the animation duration
+
 
 }
 
@@ -629,7 +637,7 @@ document.addEventListener('keydown', function(event) {
 
     // Handling overall cube rotations
     else if (event.key === 'ArrowUp') {
-        rotateCube('ArrowUp');s
+        rotateCube('ArrowUp');
     } else if (event.key === 'ArrowDown') {
         rotateCube('ArrowDown');
     } else if (event.key === 'ArrowRight') {
@@ -696,6 +704,120 @@ function shuffleCube() {
 }
 
 document.getElementById('shuffleButton').addEventListener('click', shuffleCube);
+
+
+// Mouse Click Logic
+
+
+// Add these event listeners to the cube or its rows/columns
+document.querySelectorAll('.small-cube').forEach(cube => {
+    cube.addEventListener('mousedown', onMouseDown);
+});
+
+document.addEventListener('mousemove', onMouseMove);
+document.addEventListener('mouseup', onMouseUp);
+
+let isDragging = false;
+let dragStartX, dragStartY;
+
+function onMouseDown(event) {
+    // Example: Getting the clicked cube's ID
+    let clickedCubeId = event.target.id;
+    if (clickedCubeId) {
+        let [face, segment] = clickedCubeId.split('-');
+        selectedFace = face;
+        selectedSegment = parseInt(segment, 10); // Convert segment to an integer
+
+        console.log(`Clicked on face: ${selectedFace}, segment: ${selectedSegment}`);
+    }
+
+    dragStartX = event.clientX;
+    dragStartY = event.clientY;
+    isDragging = true;
+}
+
+function onMouseMove(event) {
+    if (!isDragging) return;
+    
+    // Calculate the distance dragged in x and y direction
+    let currentX = event.clientX;
+    let currentY = event.clientY;
+    let dx = currentX - dragStartX;
+    let dy = currentY - dragStartY;
+
+    // console.log(`Mouse moved to (${currentX}, ${currentY}) - Drag distance: (${dx}, ${dy})`);
+
+
+    // Determine drag direction
+    if (Math.abs(dx) > Math.abs(dy)) {
+        dragDirection = 'horizontal';
+    } else {
+        dragDirection = 'vertical';
+    }
+
+    console.log(`Dragging: ${dragDirection}`);
+}
+
+function onMouseUp(event) {
+    if (!isDragging) return;
+
+    let segmentInfo = getRowOrColumn(selectedFace, selectedSegment);
+    let endX = event.clientX;
+    let endY = event.clientY;
+    let dx = endX - dragStartX;
+    let dy = endY - dragStartY;
+
+    isDragging = false;
+
+    // Check if the drag is significant enough to be considered a rotation
+    if (Math.abs(dx) > 20 || Math.abs(dy) > 20) {
+        if (segmentInfo.type === 'row') {
+            if (segmentInfo.index === 1) {
+                dragDirection === 'horizontal' ? rotateTopRowFrontClockwise() : rotateTopRowFrontCounterclockwise();
+            } else if (segmentInfo.index === 2) {
+                dragDirection === 'horizontal' ? rotateMiddleRowFrontClockwise() : rotateMiddleRowFrontCounterclockwise();
+            } else if (segmentInfo.index === 3) {
+                dragDirection === 'horizontal' ? rotateBottomRowFrontClockwise() : rotateBottomRowFrontCounterclockwise();
+            }
+        } else if (segmentInfo.type === 'column') {
+            if (segmentInfo.index === 1) {
+                dragDirection === 'vertical' ? rotateLeftColumnFrontClockwise() : rotateLeftColumnFrontCounterclockwise();
+            } else if (segmentInfo.index === 2) {
+                dragDirection === 'vertical' ? rotateMiddleColumnFrontClockwise() : rotateMiddleColumnFrontCounterclockwise();
+            } else if (segmentInfo.index === 3) {
+                dragDirection === 'vertical' ? rotateRightColumnFrontClockwise() : rotateRightColumnFrontCounterclockwise();
+            }
+        }
+    }
+
+    // Reset drag state
+    selectedFace = null;
+    selectedSegment = null;
+    dragDirection = null;
+    dragStartX = 0;
+    dragStartY = 0;
+}
+
+function getRowOrColumn(face, segment) {
+    // Assuming a 3x3 cube
+    // Determine row
+    if (segment <= 3) {
+        return { type: 'row', index: 1 }; // Top row
+    } else if (segment > 3 && segment <= 6) {
+        return { type: 'row', index: 2 }; // Middle row
+    } else {
+        return { type: 'row', index: 3 }; // Bottom row
+    }
+
+    // Determine column (if needed)
+    if ([1, 4, 7].includes(segment)) {
+        return { type: 'column', index: 1 }; // Left column
+    } else if ([2, 5, 8].includes(segment)) {
+        return { type: 'column', index: 2 }; // Middle column
+    } else if ([3, 6, 9].includes(segment)) {
+        return { type: 'column', index: 3 }; // Right column
+    }
+}
 
 
 
